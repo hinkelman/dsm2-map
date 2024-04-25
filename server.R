@@ -70,7 +70,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$selected_channel, {
     cll_sub <- filter(cll, channel_nu == input$selected_channel)
     up_node <-
-      filter(flowlines@data, channel_nu == input$selected_channel)[["up_node"]]
+      filter(flowlines, channel_nu == input$selected_channel)[["up_node"]]
     if (nrow(cll_sub) == 0) {
       proxyMap %>% removeShape(layerId = "SelectedChannel") %>% removeShape(layerId = "UpNode")
     } else{

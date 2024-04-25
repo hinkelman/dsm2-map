@@ -1,17 +1,20 @@
 library(shiny)
 library(shinyWidgets)
 library(leaflet)
-library(rgdal)
+library(sf)
 library(dplyr)
 
-stations = readOGR(dsn = "./shapefiles", layer = "Stations_EPSG_4326") %>%
-  subset(!is.na(RKI) &
+stations = st_read(file.path("shapefiles", "Stations_EPSG_4326.shp")) %>%
+  filter(!is.na(RKI) &
            !(!is.na(Alias) &
                RKI %in% c("RSAC075", "RSAC092", "RSAN007"))) # a few stations have duplicate entries; Alias column separates those 3 stations to remove duplicate RKIs
-sll = stations@data %>% rename(lon = xcoord, lat = ycoord) %>% mutate(RKI = as.character(RKI))
-nodes = readOGR(dsn = "./shapefiles", layer = "Nodes_EPSG_4326")
-nll = nodes@data %>% rename(lon = X, lat = Y)
-flowlines = readOGR(dsn = "./shapefiles", layer = "Flowlines_EPSG_4326")
+sll = stations %>% 
+  rename(lon = xcoord, lat = ycoord) %>% 
+  mutate(RKI = as.character(RKI))
+nodes = st_read(file.path("shapefiles", "Nodes_EPSG_4326.shp"))
+nll = nodes %>% 
+  rename(lon = X, lat = Y)
+flowlines = st_read(file.path("shapefiles", "Flowlines_EPSG_4326.shp"))
 cll = read.csv("ChannelLatLon.csv")
 
 radius = 200 # radius of circles representing stations and nodes
